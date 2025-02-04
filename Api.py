@@ -79,3 +79,23 @@ gdf
 fig, ax = plt.subplots()
 gdf.plot(x="ename", y="menu", kind="bar", ax=ax)
 st.pyplot(fig)
+
+# TODO
+# CSV 로드해서 한번에 다 디비에 INSERT 하는거
+st.subheader("벌크 인서트")
+isPress2 = st.button("한방에 인서트")
+
+if isPress2:
+    conn = get_connection()
+    cursor = conn.cursor()
+    df = pd.read_csv('lunch_menu.csv')
+    start_idx = df.columns.get_loc('2025-01-07')
+    for _, row in df.iterrows():  # 모든 행을 순회
+        for c in df.columns[start_idx:]:
+    cursor.execute(
+            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
+                  (menu_name, member_name, dt)
+                 )
+    #conn.commit()
+    cursor.close()
+
