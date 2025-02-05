@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+db_name = os.getenv("DB_NAME")
 DB_CONFIG = {
     "user": os.getenv("DB_USERNAME"),
     "dbname": os.getenv("DB_NAME"),
@@ -28,7 +29,7 @@ def insert_menu(menu_name, member_name, dt):
     cursor.close()
     conn.close()
 
-st.title("순신점심기록장")
+st.title(f"순신점심기록장!{db_name}")
 st.subheader("입력")
 menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
 member_name = st.text_input("먹은 사람", value="예: 홍길동")
@@ -83,9 +84,13 @@ gdf
 
 
 # Matplotlib롤 바 차트 그리기
-fig, ax = plt.subplots()
-gdf.plot(x="ename", y="menu", kind="bar", ax=ax)
-st.pyplot(fig)
+try:
+    fig, ax = plt.subplots()
+    gdf.plot(x="ename", y="menu", kind="bar", ax=ax)
+    st.pyplot(fig)
+except Exception as e:
+    st.warning(f"차트를 그리기에 충분한 데이터가 없습니다")
+    print(f"Exception:{e}")
 
 # TODO
 # CSV 로드해서 한번에 다 디비에 INSERT 하는거
