@@ -23,7 +23,7 @@ dt = st.date_input("얌얌 날짜")
 isPress = st.button("메뉴저장")
 
 if isPress:
-    if menu_name and memeber_name and dt:
+    if menu_name and member_name and dt:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
@@ -91,7 +91,7 @@ if isPress2:
     df = pd.read_csv('lunch_menu.csv')
     start_idx = df.columns.get_loc('2025-01-07')
     for _, row in df.iterrows():  # 모든 행을 순회
-        for c in df.columns[start_idx:]:
+        for c in df.columns[start_idx:]
     cursor.execute(
             "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
                   (menu_name, member_name, dt)
