@@ -2,17 +2,31 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import psycopg
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 DB_CONFIG = {
-    "user": "sunsin",
-    "dbname": "sunsindb",
-    "password": "mysecretpassword",
-    "host": "localhost",
-    "port": "5432"
-}
+    "user": os.getenv("DB_USERNAME"),
+    "dbname": os.getenv("DB_NAME"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
+    "port": os.getenv("DB_PORT") 
+            }
 
 def get_connection():
     return psycopg.connect(**DB_CONFIG)
+
+def insert_menu(menu_name, member_name, dt):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
+            (menu_name, member_name, dt)
+            )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 st.title("순신점심기록장")
 st.subheader("입력")
@@ -24,16 +38,8 @@ isPress = st.button("메뉴저장")
 
 if isPress:
     if menu_name and member_name and dt:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-                "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
-                (menu_name, member_name, dt)
-                )
-        conn.commit()
-        cursor.close()
-
-        st.success(f"버튼{isPress}:{menu_name},{member_name},{dt}")
+        insert_menu(menu_name, member_name, dt)
+        st.success(f"입력성공")
     else:
         st.warning(f"모든 값을 입력해주세요!")
 
@@ -53,6 +59,7 @@ cursor.execute(query)
 rows = cursor.fetchall()
 #conn.commit()
 cursor.close()
+conn.close()
 
 #selected_df = pd. DataFrame([[1,2,3]],[4,5,6], columns=['a','b','c'])
 select_df = pd.DataFrame(rows, columns=['menu', 'ename', 'dt'])
@@ -83,19 +90,28 @@ st.pyplot(fig)
 # TODO
 # CSV 로드해서 한번에 다 디비에 INSERT 하는거
 st.subheader("벌크 인서트")
-isPress2 = st.button("한방에 인서트")
-
-if isPress2:
-    conn = get_connection()
-    cursor = conn.cursor()
+if st.button("한방에 인서트"):
     df = pd.read_csv('lunch_menu.csv')
     start_idx = df.columns.get_loc('2025-01-07')
-    for _, row in df.iterrows():  # 모든 행을 순회
-        for c in df.columns[start_idx:]
-    cursor.execute(
-            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
-                  (menu_name, member_name, dt)
-                 )
-    #conn.commit()
-    cursor.close()
+    melted_df = df.melt(id_vars=['ename'], value_vars=df.columns[start_idx:-2],
+                     var_name='dt', value_name='menu')
+    not_na_df = melted_df[~melted_df['menu'].isin(['-','x','<결석>'])]
+    for _, row in not_na_df.iterrows():
+        insert_menu(row['menu'], row['ename'], row['dt'])
+
+    st.success(f"벌크 인서트 성공")
+
+#if isPress2:
+#    conn = get_connection()
+#    cursor = conn.cursor()
+#    df = pd.read_csv('lunch_menu.csv')
+#    start_idx = df.columns.get_loc('2025-01-07')
+#    for _, row in df.iterrows():  # 모든 행을 순회
+#        for c in df.columns[start_idx:]:
+#            cursor.execute(
+#            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
+#                  (menu_name, member_name, dt)
+#                 )
+#    #conn.commit()
+#    cursor.close()
 

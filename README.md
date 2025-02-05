@@ -20,8 +20,12 @@ $ sudo docker run --name local-postgres \
 - postgres
 ```sql
 CREATE TABLE public.lunch_menu (
-    id serial NOT NULL,
-
+	id serial NOT NULL,
+	menu_name text NOT NULL,
+	member_name text NOT NULL,
+	dt date NOT NULL,
+	CONSTRAINT lunch_menu_pk PRIMARY KEY (id)
+);
 
 ## Dev
 ```bash
@@ -29,6 +33,13 @@ CREATE TABLE public.lunch_menu (
 $ sudo docker ps -a
 $ sudo docker start local-postgres
 $ sudo docker stop local_postgres
+```
 
+- RUN
+```bash
+# 디비 정보에 맞춰 수정
+& cp env.dummy .env
 
-??
+# 서버 시작
+$ streamlit run App.py
+```
