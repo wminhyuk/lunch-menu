@@ -19,28 +19,42 @@ def get_connection():
     return psycopg.connect(**DB_CONFIG)
 
 def insert_menu(menu_name, member_name, dt):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
-            (menu_name, member_name, dt)
-            )
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+                "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
+                (menu_name, member_name, dt)
+                )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Exception:{e}")
+        return False
+
+
 
 st.title(f"순신점심기록장!{db_name}")
 st.subheader("입력")
 menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
-member_name = st.text_input("먹은 사람", value="예: 홍길동")
+#member_name = st.text_input("먹은 사람", value="예: 홍길동")
+member_name = st.selectbox(
+        "먹은 사람",
+        ("TOM", "cho", "hyun", "JERRY", "SEO", "jiwon", "jacob", "heejin", "lucas", "numi"),
+)
 dt = st.date_input("얌얌 날짜")
 
 isPress = st.button("메뉴저장")
 
 if isPress:
     if menu_name and member_name and dt:
-        insert_menu(menu_name, member_name, dt)
-        st.success(f"입력성공")
+        if insert_menu(menu_name, member_name, dt):
+            st.success(f"입력성공")
+        else:
+            st.error(f"입력실패")
+
     else:
         st.warning(f"모든 값을 입력해주세요!")
 

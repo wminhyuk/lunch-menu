@@ -27,6 +27,10 @@ CREATE TABLE public.lunch_menu (
 	CONSTRAINT lunch_menu_pk PRIMARY KEY (id)
 );
 
+alter table lunch_menu
+add constraint unique_member_dt unique (member_name, dt);
+```
+
 ## Dev
 ```bash
 # DB Check, Start, Stop
