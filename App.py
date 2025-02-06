@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import psycopg
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
 
@@ -143,3 +144,32 @@ if st.button("한방에 인서트"):
 #    #conn.commit()
 #    cursor.close()
 
+
+
+# 점심 안먹은 인원색출
+st.subheader("오늘 점심 메뉴를 정하지 않은 사람 ")
+if st.button("색출하기"):
+    today = datetime.today().strftime('%Y-%m-%d')
+    query_today = """
+    SELECT DISTINCT 
+    l.menu_name,
+    m.name,
+    l.dt
+    FROM
+    lunch_menu l
+    inner join member m on l.member_id = m.id
+    WHERE l.dt = %s
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(query_today, (today,))
+    members_with_menu = {row[0] for row in cursor.fetchall()}
+    cursor.close()
+    conn.close()
+
+    members_without_menu = set(members.keys()) - members_with_menu
+    if members_without_menu:
+        st.warning("범인:")
+        st.write(", ".join(members_without_menu))
+    else:
+        st.success("모든 사람이 오늘 메뉴를 정했습니다!")
