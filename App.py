@@ -124,11 +124,20 @@ if st.button("한방에 인서트"):
     melted_df = df.melt(id_vars=['ename'], value_vars=df.columns[start_idx:-2],
                      var_name='dt', value_name='menu')
     not_na_df = melted_df[~melted_df['menu'].isin(['-','x','<결석>'])]
+    total_count = len(not_na_df)  # 총 건수
+    success_count = sum(insert_menu(row['menu'], members[row['ename']], row['dt']) for _, row in not_na_df.iterrows())
     for _, row in not_na_df.iterrows():
         m_id = members[row['ename']]
         insert_menu(row['menu'], m_id, row['dt'])
 
-    st.success(f"벌크 인서트 성공")
+    if success_count == total_count:
+        st.success(f"벌크 인서트 성공!")
+    else:
+        fail_count = total_count - success_count
+        st.error(f"벌크 인서트 총 {total_count}건 중 {fail_count}건 실패")
+
+
+
 
 #if isPress2:
 #    conn = get_connection()
