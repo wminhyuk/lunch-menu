@@ -65,12 +65,16 @@ if isPress:
 
 st.subheader("확인")
 
-query = """SELECT 
-menu_name AS menu, 
-member_name AS ename, 
-dt 
-FROM lunch_menu 
-ORDER BY dt DESC"""
+query = """
+SELECT
+	l.menu_name,
+	m.name,
+	l.dt
+FROM 
+	lunch_menu l  
+	inner join member m
+	on l.member_id = m.id
+"""
 
 conn = get_connection()
 cursor = conn.cursor()
@@ -120,7 +124,8 @@ if st.button("한방에 인서트"):
                      var_name='dt', value_name='menu')
     not_na_df = melted_df[~melted_df['menu'].isin(['-','x','<결석>'])]
     for _, row in not_na_df.iterrows():
-        insert_menu(row['menu'], row['ename'], row['dt'])
+        m_id = members[row['ename']]
+        insert_menu(row['menu'], m_id, row['dt'])
 
     st.success(f"벌크 인서트 성공")
 

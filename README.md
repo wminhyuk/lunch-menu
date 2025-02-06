@@ -45,5 +45,5 @@ $ sudo docker stop local_postgres
 & cp env.dummy .env
 
 # 서버 시작
-$ streamlit run Api.py
+$ streamlit run App.py
 ```
