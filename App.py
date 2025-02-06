@@ -5,6 +5,8 @@ import psycopg
 import os
 from dotenv import load_dotenv
 
+members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
+
 load_dotenv()
 db_name = os.getenv("DB_NAME")
 DB_CONFIG = {
@@ -18,13 +20,13 @@ DB_CONFIG = {
 def get_connection():
     return psycopg.connect(**DB_CONFIG)
 
-def insert_menu(menu_name, member_name, dt):
+def insert_menu(menu_name, member_id, dt):
     try:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-                "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
-                (menu_name, member_name, dt)
+                "INSERT INTO lunch_menu (menu_name, member_id, dt) VALUES (%s, %s, %s);",
+                (menu_name, member_id, dt)
                 )
         conn.commit()
         cursor.close()
@@ -42,15 +44,17 @@ menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
 #member_name = st.text_input("먹은 사람", value="예: 홍길동")
 member_name = st.selectbox(
         "먹은 사람",
-        ("TOM", "cho", "hyun", "JERRY", "SEO", "jiwon", "jacob", "heejin", "lucas", "numi"),
-)
+        options=list(members.keys()),
+        index=list(members.keys()).index('TOM')
+        )
+member_id = members[member_name]
 dt = st.date_input("얌얌 날짜")
 
 isPress = st.button("메뉴저장")
 
 if isPress:
-    if menu_name and member_name and dt:
-        if insert_menu(menu_name, member_name, dt):
+    if menu_name and member_id and dt:
+        if insert_menu(menu_name, member_id, dt):
             st.success(f"입력성공")
         else:
             st.error(f"입력실패")
