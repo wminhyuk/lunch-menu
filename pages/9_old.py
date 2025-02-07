@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from lunch_menu.db import get_connection
+from lunch_menu.db import db_name
+from lunch_menu.db import insert_menu
 from lunch_menu.db import select_table
 
 st.set_page_config(page_title="Old", page_icon="💀")

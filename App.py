@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 from lunch_menu.db import get_connection
+from lunch_menu.db import db_name
+from lunch_menu.db import insert_menu
 from lunch_menu.db import select_table
 
 members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
