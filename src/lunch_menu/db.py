@@ -2,6 +2,7 @@ import psycopg
 from dotenv import load_dotenv
 import os
 import pandas as pd
+from psycopg.rows import dict_row
 
 # https://docs.streamlit.io/develop/concepts/connections/secrets-management
 load_dotenv()
