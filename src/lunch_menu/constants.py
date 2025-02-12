@@ -1,0 +1,1 @@
+API_AGE = "https://ac.sunsin.shop/api/py/ageCalculator"
