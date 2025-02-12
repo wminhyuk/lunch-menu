@@ -47,3 +47,4 @@ $ sudo docker stop local_postgres
 # 서버 시작
 $ streamlit run App.py
 ```
+
